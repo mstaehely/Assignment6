@@ -1,0 +1,168 @@
+import java.util.*;
+import java.io.*;
+
+/**
+ * A basic user interface for the QueryTree class.
+ * 
+ * @author Matthew Staehely
+ * @version CSC 143 Winter 15
+ */
+public class QueryTreeUI{
+    private Scanner console;
+    private boolean playing;
+    private QueryTree tree;
+
+    private QueryTreeUI(){
+        this.tree = new QueryTree();
+        this.console = new Scanner(System.in);
+        this.playing = true;
+    }
+
+    /**
+     * Main method to get the UI started.
+     * 
+     * @param args not used.
+     */
+    public static void main(String[] args){
+        QueryTreeUI ui = new QueryTreeUI();
+        ui.programStart();
+    }
+    
+    private void programStart() {
+        String answer;
+        System.out.print("Hello. Would you like to play a game?\n");
+        answer = console.nextLine();
+        System.out.print("Would you like to load a save file (y/n)? ");
+        answer = console.nextLine();
+        answer = inputVerify(answer);
+        if(answer.equals("y")){
+            System.out.print("What is the file name? ");
+            File file = new File(console.nextLine());
+            fileOpener(console, file);
+        }
+        gameStart(console);
+    }
+    
+    private void fileOpener(Scanner console, File file){
+        String answer;
+        // Checks to make sure that the input file selected by the user is valid.
+        // Will first try to see if it can read the file, if that fails it will
+        // continue to prompt the user for a good file which it can read, or let
+        // the user default to a standard instantiation (root, no leaves).
+        try{
+            if(file.canRead()) {
+                tree.readIn(file);
+            } else {
+                System.out.print("File not found or cannot be read."+
+                                   " Try again? (y/n) ");
+                answer = console.nextLine();
+                answer = inputVerify(answer);
+                if(answer.equals("y")){
+                    System.out.print("What is the file name? ");
+                    file = new File(console.nextLine());
+                    fileOpener(console, file);
+                }                    
+            }
+        } catch (FileNotFoundException e){
+            System.out.print("File not found. Try again? (y/n)");
+            answer = console.nextLine();
+            answer = inputVerify(answer);
+            if(answer.equals("y")){
+                System.out.print("What is the file name? ");
+                file = new File(console.nextLine());
+                fileOpener(console, file);
+            }
+        } catch (IOException e) {
+            System.out.print("File not found. Try again? (y/n)");
+            answer = console.nextLine();
+            answer = inputVerify(answer);
+            if(answer.equals("y")){
+                System.out.print("What is the file name? ");
+                file = new File(console.nextLine());
+                fileOpener(console, file);
+            }
+        }
+    }
+
+    private String inputVerify(String answer){
+        // Input validation for the yes/no questions.
+        answer = answer.toLowerCase();
+        while(answer.length() != 1 || (!answer.equals("y") && !answer.equals("n"))){
+            System.out.print("Invalid input. Please enter y or n: ");
+            answer = console.nextLine();
+        }
+        return answer;
+    }
+
+    private void gameStart(Scanner console){
+        // Main game engine. Drives data collection from user until they decide the
+        // game is over.
+        String answer = "";
+        System.out.println("Please think of something for me to guess.");
+        while(playing){
+            if(tree.hasNextQuestion()){
+                System.out.print(this.tree.nextQuestion() + " ");
+                answer = console.nextLine();
+                answer = inputVerify(answer);
+                tree.userResponse(answer.charAt(0));
+            } else {
+                System.out.print("I'm going to guess '" 
+                                    + tree.finalGuess() + "'. Is that it? (y/n) ");
+                answer = console.nextLine();
+                answer = inputVerify(answer);
+                if(answer.equals("y")){
+                    System.out.println("Good.\n");
+                    System.out.print("Shall we play again? (y/n) ");
+                    answer = console.nextLine().toLowerCase();
+                    answer = inputVerify(answer);
+                    if(answer.equals("n")){
+                        playing = false;
+                        gameOver(console);
+                    } else {
+                        tree.userResponse(answer.charAt(0));
+                        gameStart(console);
+                    }
+                } else {
+                    System.out.print("What are you thinking of? ");
+                    String object = console.nextLine();
+                    System.out.print("I'll need a yes or no question that" + 
+                    " distinguishes between\nyour object and my guess, please. ");
+                    String question = console.nextLine();
+                    System.out.print("And is the answer to that question "
+                                      + "yes or no (y/n)?  ");
+                    answer = console.nextLine().toLowerCase();
+                    answer = inputVerify(answer);
+                    tree.updateTree(question, object, answer.charAt(0));
+                    System.out.print("Shall we play again? (y/n) ");
+                    answer = console.nextLine();                
+                    answer = inputVerify(answer);
+                    if(answer.equals("n")){
+                        playing = false;
+                        gameOver(console);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void gameOver(Scanner console){
+        // Closes out program.
+        System.out.println("Thank you.");
+        System.out.print("Saving game. Would you like to specify a save file? (y/n) ");
+        String answer = console.nextLine();
+        answer = inputVerify(answer);
+        if(answer.equals("n")){
+            try{
+                tree.writeOut(new File("savetree.txt"));
+            } catch (IOException e) {
+            }
+        } else {
+            System.out.println("File name? ");
+            answer = console.nextLine();
+            try{
+                tree.writeOut(new File(answer));
+            } catch (IOException e){
+            }
+        }
+    }
+}			 

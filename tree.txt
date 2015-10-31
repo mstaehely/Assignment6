@@ -1,0 +1,22 @@
+Q:
+Is it an animal?
+Q:
+Does it process data?
+Q:
+Is it a mineral?
+A:
+book
+A:
+rock
+A:
+computer
+Q:
+Does it hop?
+Q:
+Does it have fur?
+A:
+bird
+A:
+dog
+A:
+frog

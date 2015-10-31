@@ -1,0 +1,81 @@
+public class QueryTree UI{
+	private Scanner console;
+	private boolean playing;
+	private QueryTree tree;
+
+	private void QueryTreeUI(){
+		this.tree = null;
+		this.console = new Scanner(System.in);
+		this.playing = true;
+	}
+
+	public static void main(String[] args){
+		programStart(this.console);
+		QueryTreeUI();
+	}
+	
+	private void programStart(Scanner console){
+		System.out.println("Welcome to the csc143 question program\n.");
+		System.out.println("Do you want to read in the previous tree (y/n)?");
+		String choice = console.nextLine().toLowerCase();
+		while(!inputVerify(choice)){
+			System.out.println("Invalid input. Please enter y or n.");
+			choice = console.nextLine();
+		}
+		if(choice.equals("n")){
+			this.tree = new QueryTree();
+		} else {
+			//read in a file
+		}
+		gameStart(console);
+	}
+
+	private boolean inputVerify(String choice){
+		if(choice.length() == 1){
+			if(choice.equals("y") || 
+			   choice.equals("n")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void gameStart(Scanner console){
+		String input;
+		while(playing){
+			System.out.println("Please think of an object for me to guess.");
+			if(tree.hasNextQuestion){
+				// start asking questions
+			} else {
+				System.out.println("Would your object happen to be a " + tree.finalGuess() + "? (y/n)");
+				input = console.nextLine().toLowerCase();
+				while(!inputVerify(input)){
+					System.out.println("Invalid input. Please enter y or n.");
+					input = console.nextLine();
+				}
+			}
+			if(input.equals("y")){
+				System.out.println("Great, I got it right!\n");
+				System.out.println("Would you like to play again? (y/n)");
+				input = console.nextLine().toLowerCase();
+				while(!inputVerify(input)){
+					System.out.println("Invalid input. Please enter y or n.");
+					input = console.nextLine();
+				}
+				if(input.equals("y")){
+					gameStart(console);
+				} else {
+					playing = false;
+				}
+			} else {
+				System.out.println("What is the name of your object? ");
+				input = console.nextLine();
+			        System.out.print("Please give me a yes/no question that distinguishes between your object and mine--> ");
+				String question = console.nextLine();
+				System.out.print("And what is the answer for your object? (y/n)? ");
+				String answer = console.nextLine();
+				while(!inputVerify(answer)){
+					System.out.println("Invalid input. Please enter y or n.");
+					answer = console.nextLine();
+				}
+				tree.updateTree(question, input, answer.toChar());

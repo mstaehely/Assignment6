@@ -1,0 +1,18 @@
+Q:
+Is it an animal?
+Q:
+Is it made of metal?
+A:
+tree
+A:
+stapler
+Q:
+Does it bark?
+A:
+cat
+Q:
+No, thank you.
+A:
+prarie dog
+A:
+dog
